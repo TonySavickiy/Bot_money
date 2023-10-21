@@ -22,7 +22,7 @@ import traceback
 bot = telebot.TeleBot(TOKEN_TG)
 
 
-#Описание инструкции
+#Команды help\start
 @bot.message_handler(commands=['start', 'help'])
 def start(message: telebot.types.Message):
     text = '''Для начала работы, пожалуйста, введите наименования валют в следующем формате:
@@ -34,16 +34,20 @@ def start(message: telebot.types.Message):
 Список валют доступен по команде: /value '''
     bot.send_message(message.chat.id, text)
 
-    
+
+# Команда для получения списка доступных валют    
 @bot.message_handler(commands=['value'])
 def get_value(message: telebot.types.Message):
     text = 'Список доступных валют:'
     box ='\n'.join(money_list)
     bot.reply_to(message, text+'\n'+box)
 
+
+# Захват сообщений от пользователя
 @bot.message_handler(content_types=['text'])
 def converter(message: telebot.types.Message):
     values = message.text.split(' ')
+    # Проверка на корректность введенных данных
     try:
         if len(values) != 3:
             raise ConvertExeption('Неверное количество параметров!(Введите 3 значения без знаков препинания)')
