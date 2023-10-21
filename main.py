@@ -14,7 +14,7 @@
 
 
 import telebot
-from extensions import APIException, MoneyChange
+from extensions import ConvertExeption, MoneyChange
 from config import TOKEN_TG, money_list
 import traceback
 
@@ -25,13 +25,14 @@ bot = telebot.TeleBot(TOKEN_TG)
 #Описание инструкции
 @bot.message_handler(commands=['start', 'help'])
 def start(message: telebot.types.Message):
-    text = '''Чтобы начать работу выведите команду боту в следующем формате:
+    text = '''Для начала работы, пожалуйста, введите наименования валют в следующем формате:
     Имя валюты(цену которой вы хотите узнать).
     Имя валюты(в которой будет представлен результат).
-    Кол-во валюты для измерения.
-    Данные необходимо вводить через пробел, без знаков припинания.
-Доступные валюты по команде: /value'''
-    bot.reply_to(message, text)
+    Кол-во необходимой для измерения валюты.
+    Данные необходимо вводить через пробел.
+    
+Список валют доступен по команде: /value '''
+    bot.send_message(message.chat.id, text)
 
     
 @bot.message_handler(commands=['value'])
@@ -45,10 +46,10 @@ def converter(message: telebot.types.Message):
     values = message.text.split(' ')
     try:
         if len(values) != 3:
-            raise APIException('Неверное количество параметров!(Введите 3 значения без знаков припинания)')
+            raise ConvertExeption('Неверное количество параметров!(Введите 3 значения без знаков препинания)')
         
         answer = MoneyChange.get_price(*values)
-    except APIException as e:
+    except ConvertExeption as e:
         bot.reply_to(message, f"Ошибка в команде:\n{e}" )
     except Exception as e:
         traceback.print_tb(e.__traceback__)
